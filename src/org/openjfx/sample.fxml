@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="384.0" prefWidth="235.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.MainController">
+    <children>
+        <MenuBar fx:id="menuBar" VBox.vgrow="NEVER">
+            <menus>
+                <Menu fx:id="methodMenu" mnemonicParsing="false" text="Method" visible="false">
+                    <items>
+                        <MenuItem fx:id="colorMethodMenu" mnemonicParsing="false" onAction="#colorMethodMenuAction" text="Color" />
+                        <MenuItem fx:id="templateMethodMenu" mnemonicParsing="false" onAction="#templateMethodMenuAction" text="Template" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Debug" visible="false">
+                    <items>
+                        <RadioMenuItem fx:id="debugSwitcher" mnemonicParsing="false" text="on" />
+                    </items>
+                </Menu>
+                <Menu fx:id="languageMenu" mnemonicParsing="false" text="Language" visible="false">
+                    <items>
+                        <MenuItem fx:id="engLangMenu" mnemonicParsing="false" text="English" />
+                        <MenuItem fx:id="rusLangMenu" mnemonicParsing="false" text="Russian" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <AnchorPane fx:id="mainPane" maxHeight="-1.0" maxWidth="-1.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="359.0" prefWidth="236.0" VBox.vgrow="ALWAYS">
+            <children>
+                <Button fx:id="stopButton" disable="true" layoutX="151.0" layoutY="334.0" mnemonicParsing="false" onAction="#stopButtonAction" text="Stop">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <AnchorPane layoutX="535.0" layoutY="40.0" prefHeight="51.0" prefWidth="52.0" />
+                <Label fx:id="aoiSizeField" layoutX="14.0" layoutY="15.0" prefHeight="26.0" prefWidth="90.0" text="AOI size">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Button fx:id="startButton" disable="true" layoutX="27.0" layoutY="334.0" mnemonicParsing="false" onAction="#startButtonAction" text="Start">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <Button fx:id="setButton" layoutX="72.0" layoutY="13.0" mnemonicParsing="false" onAction="#setButtonAction" text="Set">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <Label layoutX="14.0" layoutY="110.0" text="First pos:">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Label layoutX="12.0" layoutY="134.0" text="Second pos:">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Button fx:id="lookButton" disable="true" layoutX="17.0" layoutY="76.0" mnemonicParsing="false" onAction="#lookButtonAction" text="Look">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <Label fx:id="statsField" alignment="CENTER" layoutX="18.0" layoutY="255.0" prefHeight="18.0" prefWidth="200.0" text="Stats">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+                <Label fx:id="fishField" layoutX="18.0" layoutY="283.0" text="Fish:">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Label fx:id="fishNumField" layoutX="50.0" layoutY="283.0">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Label layoutX="16.0" layoutY="120.0" text="Method:" visible="false">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Label fx:id="methodField" layoutX="75.0" layoutY="120.0" text="Color" textFill="RED" visible="false">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Label fx:id="firstPosField" layoutX="81.0" layoutY="110.0" prefHeight="20.0" prefWidth="55.0" textFill="RED">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+                <Label fx:id="secondPosField" layoutX="97.0" layoutY="134.0" prefHeight="20.0" prefWidth="53.0" textFill="RED">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+                <Button fx:id="applyAOIButton" layoutX="76.0" layoutY="76.0" mnemonicParsing="false" onAction="#applyAOIButtonAction" text="Apply">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <ImageView fx:id="bobberField" fitHeight="44.0" fitWidth="52.0" layoutX="16.0" layoutY="211.0" pickOnBounds="true" preserveRatio="true" />
+                <Label fx:id="difLabel" layoutX="134.0" layoutY="130.0">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Label layoutX="13.0" layoutY="46.0" text="Fish Action coord:">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Button fx:id="setFishActionButton" layoutX="128.0" layoutY="41.0" mnemonicParsing="false" onAction="#setFishActionButtonAction" text="Set">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <Label fx:id="fishActionField" layoutX="113.0" layoutY="159.0" prefHeight="20.0" prefWidth="75.0" textFill="RED">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+                <Label layoutX="10.0" layoutY="159.0" text="Fish Action pos:">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+            <Label layoutX="78.0" layoutY="183.0" text="Sens:">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="sensField" layoutX="114.0" layoutY="181.0" prefHeight="26.0" prefWidth="39.0" />
+            </children>
+        </AnchorPane>
+    </children>
+</VBox>
