@@ -10,6 +10,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.opencv.core.Core;
 
+import java.util.Objects;
+
 public class Main extends Application {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -25,15 +27,11 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         loader = new FXMLLoader();
-        root = loader.load(getClass().getResource("sample.fxml"));
+        loader.setLocation(getClass().getResource("sample.fxml"));
+        root = loader.load();
         primaryStage.setTitle(BotUtil.generateString(10));
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent windowEvent) {
-                System.exit(0);
-            }
-        });
-        primaryStage.setScene(new Scene(root, 236, 385));
+        primaryStage.setOnCloseRequest(windowEvent -> System.exit(0));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
         primaryStage.setResizable(false);
         primaryStage.getIcons().add(new Image("icon.ico"));

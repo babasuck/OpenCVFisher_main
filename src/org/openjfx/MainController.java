@@ -11,100 +11,83 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.lang.reflect.Field;
+
 
 
 public class MainController {
+    public Label statsField;
+    public Label fishField;
     @FXML
-    AnchorPane mainPane;
+    public Label difNumField;
     @FXML
-    Button setButton;
+    public AnchorPane mainPane;
     @FXML
-    Button lookButton;
+    public Button setButton;
     @FXML
-    Button startButton;
+    public Button lookButton;
     @FXML
-    Button setFishActionButton;
-    Point fishActionPosition;
+    public Button startButton;
     @FXML
-    Label fishActionField;
+    public Button setFishActionButton;
+    public Point fishActionPosition;
     @FXML
-    Label fishNumField;
+    public Label fishActionField;
     @FXML
-    Button stopButton;
+    public Label fishNumField;
     @FXML
-    Label methodField;
+    public Button stopButton;
     @FXML
-    TextField sensField;
+    public Label methodField;
     @FXML
-    Button applyAOIButton;
+    public TextField sensField;
     @FXML
-    Label firstPosField;
+    public Button applyAOIButton;
     @FXML
-    Label secondPosField;
+    public Label firstPosField;
     @FXML
-    ImageView bobberField;
+    public Label secondPosField;
     @FXML
-    Label difLabel;
+    public ImageView bobberField;
+    @FXML
+    public Label difLabel;
     @FXML
     RadioMenuItem debugSwitcher;
     Point firstPos, secondPos;
     String method = "color";
     Rectangle AOI;
-    WindowImage WI;
-    WindowImageController WIC;
+    //WindowImage WI;
+    //WindowImageController WIC;
 
+    /**
+     * Получить координаты для AOI и удочки.
+     * Взять координаты X - на кнопку 1
+     * Взять координаты Y - на кнопку 2
+     * Взять координаты удочки - на кнопку 3
+     */
     @FXML
     public void setButtonAction() {
-        mainPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                int x, y;
-                String code = keyEvent.getCode().toString();
-                if (code.equals("DIGIT1")) {
+        mainPane.setOnKeyPressed(keyEvent -> {
+            int x, y;
+            String code = keyEvent.getCode().toString();
+            switch (code) {
+                case "DIGIT1" -> {
                     firstPos = MouseInfo.getPointerInfo().getLocation();
                     x = firstPos.x;
                     y = firstPos.y;
                     firstPosField.setText(x + " " + y);
-                } else if (code.equals("DIGIT2")) {
+                }
+                case "DIGIT2" -> {
                     secondPos = MouseInfo.getPointerInfo().getLocation();
                     x = secondPos.x;
                     y = secondPos.y;
                     secondPosField.setText(x + " " + y);
                 }
-            }
-        });
-    }
-
-    public void applyAOIButtonAction() {
-        if (!firstPosField.getText().isEmpty() && !secondPosField.getText().isEmpty()) {
-            int w = secondPos.x - firstPos.x;
-            int h = secondPos.y - firstPos.y;
-            if (w <= 0 && h <= 0) {
-                Alert al = new Alert(AlertType.ERROR, "Invalid Dimension", ButtonType.OK);
-                al.showAndWait();
-                return;
-            }
-            AOI = new Rectangle(firstPos, new Dimension(w, h));
-            mainPane.setOnKeyPressed(null);
-            lookButton.setDisable(false);
-            startButton.setDisable(false);
-        }
-    }
-
-    @FXML
-    public void setFishActionButtonAction() {
-        mainPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                String code = keyEvent.getCode().toString();
-                if (code.equals("DIGIT3")) {
+                case "DIGIT3" -> {
                     fishActionPosition = MouseInfo.getPointerInfo().getLocation();
                     fishActionField.setText(fishActionPosition.x + " " + fishActionPosition.y);
                 }
@@ -112,50 +95,47 @@ public class MainController {
         });
     }
 
-    @FXML
-    public void lookButtonAction() throws IOException, InterruptedException {
-        mainPane.setOnKeyPressed(null);
-        BufferedImage bf = BotUtil.grabScreen(AOI);
-        Image img = SwingFXUtils.toFXImage(bf, null);
-        WI = new WindowImage(AOI.width, AOI.height);
-        WI.show();
-        WIC = WI.getController();
-        WIC.setImage(img);
+    /**
+     * Применить координаты AOI и построить его.
+     */
+    public void applyAOIButtonAction() {
+        mainPane.setOnKeyPressed(null); // Отключаем чтение событий с клавы.
+        if (firstPos != null && secondPos != null && fishActionPosition != null) {
+            int w = secondPos.x - firstPos.x;
+            int h = secondPos.y - firstPos.y;
+            if (w <= 0 && h <= 0) {
+                new Alert(AlertType.ERROR, "Invalid Dimension", ButtonType.OK).showAndWait();
+                return;
+            }
+            // Инициализируем AOI
+            AOI = new Rectangle(firstPos, new Dimension(w, h));
+            lookButton.setDisable(false);
+            startButton.setDisable(false);
+        }
     }
-
+    /**
+     * Посмотреть AOI
+     */
+    @FXML
+    public void lookButtonAction() {
+        mainPane.setOnKeyPressed(null); // Отключаем чтение событий с клавы.
+        BufferedImage bf = BotUtil.grabScreen(AOI);
+        if(bf == null)
+            throw new NullPointerException();
+        WindowImage wi = new WindowImage(bf.getWidth(), bf.getHeight());
+        wi.getController().setImage(SwingFXUtils.toFXImage(bf, null));
+        wi.show();
+    }
     @FXML
     public void startButtonAction() throws IOException, IllegalAccessException {
-        if (AOI != null) {
-//            WI = new WindowImage(AOI.width, AOI.height);
-//            WIC = WI.getController();
-            Bot bot;
-            MainController MI = this;
-            if(sensField.getText().isEmpty())
-                sensField.setText("3.5");
-            double sens = Double.parseDouble(sensField.getText());
-            bot = new Bot(sens, fishActionPosition, debugSwitcher.isSelected(), AOI, MI);
-            bot.start();
-            stopButton.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    bot.interrupt();
-                    startButton.setDisable(false);
-                    stopButton.setDisable(true);
-                    setButton.setDisable(false);
-                    lookButton.setDisable(false);
-                    applyAOIButton.setDisable(false);
-                    setFishActionButton.setDisable(false);
-                    sensField.setDisable(false);
-                }
-            });
+        if (AOI == null || fishActionPosition == null) {
+            new Alert(AlertType.ERROR, "Invalid Dimension", ButtonType.OK).showAndWait();
+            return;
         }
-        stopButton.setDisable(false);
-        startButton.setDisable(true);
-        setButton.setDisable(true);
-        lookButton.setDisable(true);
-        applyAOIButton.setDisable(true);
-        setFishActionButton.setDisable(true);
-        sensField.setDisable(true);
+        if(sensField.getText().isEmpty())
+            sensField.setText("3.5");
+        double sens = Double.parseDouble(sensField.getText());
+        new Bot(sens, fishActionPosition, AOI);
     }
 
     @FXML

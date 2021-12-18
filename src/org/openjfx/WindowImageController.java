@@ -8,10 +8,6 @@ public class WindowImageController {
     @FXML
     ImageView imageView;
 
-    public void initialize() {
-
-    }
-
     public void setImage(Image img) {
         imageView.setFitWidth(img.getWidth());
         imageView.setFitHeight(img.getHeight());

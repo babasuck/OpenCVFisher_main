@@ -13,14 +13,20 @@ public class WindowImage {
     Scene scene;
     Stage stage;
 
-    public WindowImage(int w, int h) throws IOException {
+    public WindowImage(int w, int h) {
         loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("WindowImage.fxml"));
-        root = loader.load();
+        try {
+            root = loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
         scene = new Scene(root, w, h);
         stage = new Stage();
         stage.setScene(scene);
-        stage.setTitle("AOI");
+        stage.setResizable(false);
+
     }
 
     public WindowImageController getController() {
