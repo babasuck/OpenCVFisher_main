@@ -20,7 +20,8 @@ public class BotUtil {
     public static BufferedImage grabScreen(Rectangle rectangle) {
         try {
             return new Robot().createScreenCapture(rectangle);
-        } catch (SecurityException | AWTException ignored) {
+        } catch (SecurityException | AWTException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -42,6 +43,12 @@ public class BotUtil {
         Robot rob = new Robot();
         rob.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         rob.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+    }
+
+    public static void clickMouseRight() throws AWTException {
+        Robot rob = new Robot();
+        rob.mousePress(InputEvent.BUTTON3_DOWN_MASK);
+        rob.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
     }
 
     public static Point colorMethod(Rectangle rect) throws IOException, InterruptedException {
@@ -103,13 +110,17 @@ public class BotUtil {
             return image;
         }
 
-        public static Mat BufferedImage2Mat(BufferedImage image) throws IOException {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ImageIO.write(image, "jpg", byteArrayOutputStream);
-            byteArrayOutputStream.flush();
-            return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.IMREAD_UNCHANGED);
+        public static Mat BufferedImage2Mat(BufferedImage image)  {
+            try(ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                ImageIO.write(image, "jpg", byteArrayOutputStream);
+                byteArrayOutputStream.flush();
+                return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.IMREAD_UNCHANGED);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
-
         public static Image MatToImage(Mat m) {
             BufferedImage bf = MatToBufferedImage(m);
             ImageIcon temp = new ImageIcon(bf);

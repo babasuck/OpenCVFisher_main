@@ -135,7 +135,7 @@ public class MainController {
         if(sensField.getText().isEmpty())
             sensField.setText("3.5");
         double sens = Double.parseDouble(sensField.getText());
-        new Bot(sens, fishActionPosition, AOI);
+        new BotStage(sens, fishActionPosition, AOI);
     }
 
     @FXML

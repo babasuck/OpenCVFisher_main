@@ -37,4 +37,24 @@
          <Font name="System Bold" size="14.0" />
       </font>
    </Label>
+   <Label layoutX="72.0" layoutY="42.0" text="Dif:">
+      <font>
+         <Font size="14.0" />
+      </font>
+   </Label>
+   <Label fx:id="difNumLabel" layoutX="105.0" layoutY="43.0" textFill="RED">
+      <font>
+         <Font size="13.0" />
+      </font>
+   </Label>
+   <Label layoutX="72.0" layoutY="65.0" text="Time:">
+      <font>
+         <Font size="14.0" />
+      </font>
+   </Label>
+   <Label fx:id="timeLabel" layoutX="113.0" layoutY="66.0" textFill="RED">
+      <font>
+         <Font size="13.0" />
+      </font>
+   </Label>
 </AnchorPane>

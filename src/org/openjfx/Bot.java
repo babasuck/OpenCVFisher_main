@@ -2,6 +2,8 @@ package org.openjfx;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -17,32 +19,27 @@ public class Bot extends Thread {
      */
     Rectangle AOI;
     /**
-     * ???
-     */
-    //WindowImage WI;
-    /**
      * Точка удочки
      */
     Point fishActionCoord;
     /**
-     * Кол-во пойманной рыбы
-     */
-    int fishAmount;
-    /**
      * Чувствительность
      */
     double sens;
-
+    /**
+     * BotStage
+     */
+    BotStage bs;
     /**
      *
      * @param sens чувствительность
      * @param fishActionCoord точка удочки
      * @param AOI зона интереса поплавка
      */
-    public Bot(Double sens, Point fishActionCoord, Rectangle AOI) {
+    public Bot(Double sens, Point fishActionCoord, Rectangle AOI, BotStage bs) {
+        this.bs = bs;
         this.AOI = AOI;
         this.fishActionCoord = fishActionCoord;
-        fishAmount = 0;
         this.sens = sens;
         start();
     }
@@ -50,9 +47,14 @@ public class Bot extends Thread {
     @Override
     public void run() {
         super.run();
-        Platform.runLater(() -> new BotStage(getName(), this));
+        System.out.println(bs);
+        System.out.println(bs.getBotStageController());
+        try {
+            startFishing();
+        } catch (AWTException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
-
     /**
      * Метод определения через шаблон
      */
@@ -62,63 +64,81 @@ public class Bot extends Thread {
 
     /**
      * Запуск рыбалки
-     * @throws IOException не найден рабочий файл
      * @throws AWTException ошибка с роботом
      * @throws InterruptedException прерван слип
      */
-//    private void startMethod() throws IOException, AWTException, InterruptedException {
-//        while (!isInterrupted()) {
-//            System.out.println("NEW ITERATION");
-//            long time = System.currentTimeMillis();
-//            BotUtil.moveMouse(fishActionCoord.x, fishActionCoord.y);
-//            BotUtil.clickMouse();
-//            BotUtil.moveMouse(0, 0);
-//            sleep(3000);
-//            org.opencv.core.Point bobberPoint = new org.opencv.core.Point();
-//            try {
-//                bobberPoint = BotUtil.colorMethod(AOI);
-//            } catch (IOException | InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            if (bobberPoint.x == 0 && bobberPoint.y == 0) {
-//                System.out.println("Поплавок не найден.");
-//                continue;
-//            }
-//            Rectangle bobberAOI = new Rectangle((int) (AOI.x + bobberPoint.x), (int) (AOI.y + bobberPoint.y - 5), 20, 15);
-//
-//            // Скрин поплавка в матрицу
-//            Mat bobber = BotUtil.Convertator.BufferedImage2Mat(BotUtil.grabScreen(bobberAOI));
-//            // Поплавок в серый цвет
-//            Imgproc.cvtColor(bobber, bobber, Imgproc.COLOR_BGR2GRAY);
-////            double mean = Core.mean(bobber).val[0];
-//            ArrayList<Double> norma = new ArrayList<>();
-//            norma.add(0.0);
-//            while (!isInterrupted()) {
-//                BufferedImage bf_now = BotUtil.grabScreen(bobberAOI);
-//                MI.setBobberField(SwingFXUtils.toFXImage(bf_now, null));
-//                Mat bobber_now = BotUtil.Convertator.BufferedImage2Mat(bf_now);
-//                Imgproc.cvtColor(bobber_now, bobber_now, Imgproc.COLOR_BGR2GRAY);
-//                double mean_now = Core.mean(bobber_now).val[0];
-//                // STATIC MEAN - NOW MEAN
-//                double diff = Math.abs(mean_now - norma.get(norma.size() - 1));
-//                norma.add(mean_now);
-//                    if (diff > 1)
-//                        System.out.println(diff);
-//                if (diff > sens && diff < 20) {
-//                    System.out.println(diff);
-//                    BotUtil.moveMouse(bobberAOI.x, bobberAOI.y);
-//                    BotUtil.clickMouse();
-//                    fishAmount++;
-//                    break;
-//                }
-//                if(System.currentTimeMillis() - time > 17300)
-//                    break;
-//            }
-//            BotUtil.moveMouse(0, 0);
-//            norma.clear();
-//            sleep(4000);
-//        }
-//    }
+    private void startFishing() throws AWTException, InterruptedException {
+        int fails = 0;
+        int fish = 0;
+        BotStageController bsc = bs.getBotStageController();
+        while (!isInterrupted()) {
+            int finalFails = fails;
+            int finalFish = fish;
+            Platform.runLater(() -> {
+                bsc.setFailsNumField(finalFails);
+                bsc.setFishNumField(finalFish);
+            });
+            System.out.println("NEW ITERATION");
+            BotUtil.moveMouse(fishActionCoord.x, fishActionCoord.y);
+            BotUtil.clickMouse();
+            sleep(3500);
+            org.opencv.core.Point bobberPoint = new org.opencv.core.Point();
+            try {
+                bobberPoint = BotUtil.colorMethod(AOI);
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (bobberPoint.x == 0 && bobberPoint.y == 0) {
+                System.out.println("Поплавок не найден.");
+                fails++;
+                continue;
+            }
+            // Зона поплавка
+            Rectangle bobberAOI = new Rectangle((int) (AOI.x + bobberPoint.x), (int) (AOI.y + bobberPoint.y - 5), 20, 15);
+            // Скрин поплавка в матрицу
+            Mat bobber = BotUtil.Convertator.BufferedImage2Mat(BotUtil.grabScreen(bobberAOI));
+            if (bobber == null)
+                break;
+            // Поплавок в серый цвет
+            Imgproc.cvtColor(bobber, bobber, Imgproc.COLOR_BGR2GRAY);
+            double mean = Core.mean(bobber).val[0];
+            ArrayList<Double> norma = new ArrayList<>();
+            norma.add(mean);
+            long time = System.currentTimeMillis();
+            while (!isInterrupted()) {
+                Platform.runLater(() -> bsc.setTimeLabel((int) (25 - (System.currentTimeMillis() - time) / 1000)));
+                BufferedImage bf_now = BotUtil.grabScreen(bobberAOI);
+                if(bf_now == null) break;
+                bsc.setBobberImage(SwingFXUtils.toFXImage(bf_now, null));
+                Mat bobber_now = BotUtil.Convertator.BufferedImage2Mat(bf_now);
+                if(bobber_now == null) break;
+                Imgproc.cvtColor(bobber_now, bobber_now, Imgproc.COLOR_BGR2GRAY);
+                //double mean_now = Core.mean(bobber_now).val[0];
+                // STATIC MEAN - NOW MEAN
+                mean = Core.mean(bobber_now).val[0];
+                double diff = Math.abs(mean - norma.get(norma.size() - 1));
+                norma.add(mean);
+                    if (diff > 1) {
+                        System.out.println(diff);
+                        Platform.runLater(() -> bsc.setDifNum(diff));
+                    }
+                if (diff > sens && diff < 20) {
+                    BotUtil.moveMouse(bobberAOI.x, bobberAOI.y);
+                    BotUtil.clickMouseRight();
+                    fish++;
+                    break;
+                }
+                if(System.currentTimeMillis() - time > 25000) {
+                    fails++;
+                    break;
+                }
+            }
+            BotUtil.moveMouse(0, 0);
+            norma.clear();
+            sleep(3000);
+            Platform.runLater(() -> bsc.setDifNum(0));
+        }
+    }
 
     @Override
     public void interrupt() {

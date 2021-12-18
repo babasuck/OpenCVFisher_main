@@ -9,34 +9,37 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import javax.imageio.IIOException;
+import java.awt.*;
 import java.io.IOException;
 
 public class BotStage {
-    Parent root;
-    FXMLLoader loader;
-    Scene scene;
-    Stage stage = new Stage();
-    BotStageController botStageController;
-
-    public BotStage(String title, Thread thread) {
-        loader = new FXMLLoader();
+    private BotStageController botStageController;
+    public BotStage(Double sens, Point fishActionCoord, Rectangle AOI) {
+        Parent root;
+        FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("BotStage.fxml"));
         try {
             root = loader.load();
         }
         catch (IOException e) {
             e.printStackTrace();
+            return;
         }
-        scene = new Scene(root);
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setX(0);
+        stage.setY(0);
         stage.setScene(scene);
         stage.setResizable(false);
-        stage.setTitle(title);
         stage.show();
         botStageController = loader.getController();
-        botStageController.titleField.setText(title);
-        stage.setOnCloseRequest(windowEvent -> {
-            thread.interrupt();
-        });
+        Thread bot = new Bot(sens, fishActionCoord, AOI, this);
+        botStageController.titleField.setText(bot.getName());
+        stage.setOnCloseRequest(windowEvent -> bot.interrupt());
+    }
+
+    public BotStageController getBotStageController() {
+        return botStageController;
     }
 
 }

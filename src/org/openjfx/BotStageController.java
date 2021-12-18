@@ -2,19 +2,43 @@ package org.openjfx;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class BotStageController {
     @FXML
     public Label titleField;
+    public Label difNumLabel;
     @FXML
-    private ImageView bobberImage;
+    public ImageView bobberImage;
     @FXML
-    private Label fishNumField;
+    public Label fishNumField;
     @FXML
-    private Label failsNumField;
+    public Label failsNumField;
+    public Label timeLabel;
 
     public void initialize() {
+    }
 
+    public void setBobberImage(Image img) {
+        bobberImage.setFitHeight(img.getHeight());
+        bobberImage.setFitWidth(img.getWidth());
+        bobberImage.setImage(img);
+    }
+
+    public void setDifNum(double difNum) {
+        difNumLabel.setText(String.format("%.2f", difNum));
+    }
+
+    public void setFishNumField(int fishNumField) {
+        this.fishNumField.setText(String.valueOf(fishNumField));
+    }
+
+    public void setFailsNumField(int failsNumField) {
+        this.failsNumField.setText(String.valueOf(failsNumField));
+    }
+
+    public void setTimeLabel(int time) {
+        this.timeLabel.setText(String.valueOf(time));
     }
 }
