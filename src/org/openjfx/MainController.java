@@ -35,6 +35,7 @@ public class MainController {
     @FXML
     public Button setFishActionButton;
     public Point fishActionPosition;
+    public Point destroyFishPosition;
     @FXML
     public Label fishActionField;
     @FXML
@@ -55,6 +56,7 @@ public class MainController {
     public ImageView bobberField;
     @FXML
     public Label difLabel;
+    public Label destroyFishLabel;
     @FXML
     RadioMenuItem debugSwitcher;
     Point firstPos, secondPos;
@@ -91,6 +93,10 @@ public class MainController {
                     fishActionPosition = MouseInfo.getPointerInfo().getLocation();
                     fishActionField.setText(fishActionPosition.x + " " + fishActionPosition.y);
                 }
+                case "DIGIT4" -> {
+                    destroyFishPosition = MouseInfo.getPointerInfo().getLocation();
+                    destroyFishLabel.setText(destroyFishPosition.x + " " + destroyFishPosition.y);
+                }
             }
         });
     }
@@ -100,14 +106,14 @@ public class MainController {
      */
     public void applyAOIButtonAction() {
         mainPane.setOnKeyPressed(null); // Отключаем чтение событий с клавы.
-        if (firstPos != null && secondPos != null && fishActionPosition != null) {
+        if (firstPos != null && secondPos != null && fishActionPosition != null && destroyFishPosition != null) {
             int w = secondPos.x - firstPos.x;
             int h = secondPos.y - firstPos.y;
             if (w <= 0 && h <= 0) {
                 new Alert(AlertType.ERROR, "Invalid Dimension", ButtonType.OK).showAndWait();
                 return;
             }
-            // Инициализируем AOI
+            // нициализируем AOI
             AOI = new Rectangle(firstPos, new Dimension(w, h));
             lookButton.setDisable(false);
             startButton.setDisable(false);
@@ -128,14 +134,14 @@ public class MainController {
     }
     @FXML
     public void startButtonAction() throws IOException, IllegalAccessException {
-        if (AOI == null || fishActionPosition == null) {
+        if (AOI == null || fishActionPosition == null || destroyFishPosition == null) {
             new Alert(AlertType.ERROR, "Invalid Dimension", ButtonType.OK).showAndWait();
             return;
         }
         if(sensField.getText().isEmpty())
             sensField.setText("3.5");
         double sens = Double.parseDouble(sensField.getText());
-        new BotStage(sens, fishActionPosition, AOI);
+        new BotStage(sens, fishActionPosition, AOI, destroyFishPosition);
     }
 
     @FXML

@@ -2,8 +2,6 @@ package org.openjfx;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -22,6 +20,7 @@ public class Bot extends Thread {
      * Точка удочки
      */
     Point fishActionCoord;
+    Point destroyFishPosition;
     /**
      * Чувствительность
      */
@@ -30,17 +29,18 @@ public class Bot extends Thread {
      * BotStage
      */
     BotStage bs;
+
     /**
-     *
-     * @param sens чувствительность
+     * @param sens            чувствительность
      * @param fishActionCoord точка удочки
-     * @param AOI зона интереса поплавка
+     * @param AOI             зона интереса поплавка
      */
-    public Bot(Double sens, Point fishActionCoord, Rectangle AOI, BotStage bs) {
+    public Bot(Double sens, Point fishActionCoord, Rectangle AOI, Point destroyFishPosition, BotStage bs) {
         this.bs = bs;
         this.AOI = AOI;
         this.fishActionCoord = fishActionCoord;
         this.sens = sens;
+        this.destroyFishPosition = destroyFishPosition;
         start();
     }
 
@@ -55,6 +55,7 @@ public class Bot extends Thread {
             e.printStackTrace();
         }
     }
+
     /**
      * Метод определения через шаблон
      */
@@ -64,19 +65,29 @@ public class Bot extends Thread {
 
     /**
      * Запуск рыбалки
-     * @throws AWTException ошибка с роботом
+     *
+     * @throws AWTException         ошибка с роботом
      * @throws InterruptedException прерван слип
      */
     private void startFishing() throws AWTException, InterruptedException {
+        sleep(20000);
         int fails = 0;
         int fish = 0;
+        int timeout = 0;
         BotStageController bsc = bs.getBotStageController();
         while (!isInterrupted()) {
+            if((fish % 20) == 0) {
+                BotUtil.moveMouse(destroyFishPosition.x, destroyFishPosition.y);
+                BotUtil.clickMouse();
+                sleep(700);
+            }
             int finalFails = fails;
             int finalFish = fish;
+            int finalTimeout = timeout;
             Platform.runLater(() -> {
                 bsc.setFailsNumField(finalFails);
                 bsc.setFishNumField(finalFish);
+                bsc.setTimeoutLabel(finalTimeout);
             });
             System.out.println("NEW ITERATION");
             BotUtil.moveMouse(fishActionCoord.x, fishActionCoord.y);
@@ -95,8 +106,11 @@ public class Bot extends Thread {
             }
             // Зона поплавка
             Rectangle bobberAOI = new Rectangle((int) (AOI.x + bobberPoint.x), (int) (AOI.y + bobberPoint.y - 5), 20, 15);
+            // Скрин поплавка
+            BufferedImage bf_now = BotUtil.grabScreen(bobberAOI);
+            bsc.setBobberImage(SwingFXUtils.toFXImage(bf_now, null));
             // Скрин поплавка в матрицу
-            Mat bobber = BotUtil.Convertator.BufferedImage2Mat(BotUtil.grabScreen(bobberAOI));
+            Mat bobber = BotUtil.Convertator.BufferedImage2Mat(bf_now);
             if (bobber == null)
                 break;
             // Поплавок в серый цвет
@@ -106,30 +120,29 @@ public class Bot extends Thread {
             norma.add(mean);
             long time = System.currentTimeMillis();
             while (!isInterrupted()) {
-                Platform.runLater(() -> bsc.setTimeLabel((int) (25 - (System.currentTimeMillis() - time) / 1000)));
-                BufferedImage bf_now = BotUtil.grabScreen(bobberAOI);
-                if(bf_now == null) break;
-                bsc.setBobberImage(SwingFXUtils.toFXImage(bf_now, null));
+                Platform.runLater(() -> bsc.setTimeLabel((int) (23 - (System.currentTimeMillis() - time) / 1000)));
+                bf_now = BotUtil.grabScreen(bobberAOI);
+                if (bf_now == null) break;
                 Mat bobber_now = BotUtil.Convertator.BufferedImage2Mat(bf_now);
-                if(bobber_now == null) break;
+                if (bobber_now == null) break;
                 Imgproc.cvtColor(bobber_now, bobber_now, Imgproc.COLOR_BGR2GRAY);
                 //double mean_now = Core.mean(bobber_now).val[0];
                 // STATIC MEAN - NOW MEAN
                 mean = Core.mean(bobber_now).val[0];
                 double diff = Math.abs(mean - norma.get(norma.size() - 1));
                 norma.add(mean);
-                    if (diff > 1) {
-                        System.out.println(diff);
-                        Platform.runLater(() -> bsc.setDifNum(diff));
-                    }
+                if (diff > 1) {
+                   //System.out.println(diff);
+                    Platform.runLater(() -> bsc.setDifNum(diff));
+                }
                 if (diff > sens && diff < 20) {
                     BotUtil.moveMouse(bobberAOI.x, bobberAOI.y);
                     BotUtil.clickMouseRight();
                     fish++;
                     break;
                 }
-                if(System.currentTimeMillis() - time > 25000) {
-                    fails++;
+                if (System.currentTimeMillis() - time > 25000) {
+                    timeout++;
                     break;
                 }
             }

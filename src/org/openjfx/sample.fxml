@@ -63,7 +63,7 @@
     <!--            </menus>-->
     <!--        </MenuBar>-->
     <AnchorPane fx:id="mainPane" prefHeight="122.0" prefWidth="222.0" VBox.vgrow="ALWAYS">
-        <Button fx:id="startButton" disable="true" layoutX="45.0" layoutY="248.0" mnemonicParsing="false" onAction="#startButtonAction" prefHeight="30.0" prefWidth="132.0" text="Start">
+        <Button fx:id="startButton" disable="true" layoutX="45.0" layoutY="265.0" mnemonicParsing="false" onAction="#startButtonAction" prefHeight="30.0" prefWidth="132.0" text="Start">
             <font>
                 <Font size="14.0" />
             </font>
@@ -118,12 +118,22 @@
                 <Font size="14.0" />
             </font>
         </Label>
-        <Label layoutX="8.0" layoutY="198.0" text="Sens:">
+        <Label layoutX="13.0" layoutY="228.0" text="Sens:">
             <font>
                 <Font size="14.0" />
             </font>
         </Label>
-        <TextField fx:id="sensField" layoutX="43.0" layoutY="195.0" prefHeight="13.0" prefWidth="39.0" />
-        <TextArea cache="true" editable="false" layoutX="13.0" layoutY="10.0" prefHeight="59.0" prefWidth="140.0" text="1 - First coord AOI&#10;2 - Second coord AOI&#10;3 - Fish Action Button" />
+        <TextField fx:id="sensField" layoutX="50.0" layoutY="225.0" prefHeight="13.0" prefWidth="39.0" />
+        <TextArea cache="true" editable="false" layoutX="13.0" layoutY="10.0" prefHeight="59.0" prefWidth="140.0" text="1 - First coord AOI&#10;2 - Second coord AOI&#10;3 - Fish Action Button&#10;4 - Destroy Fish Button&#10;" />
+      <Label layoutX="8.0" layoutY="194.0" text="Destroy Fish pos:">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="destroyFishLabel" layoutX="116.0" layoutY="193.0" textFill="RED">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
     </AnchorPane>
 </VBox>

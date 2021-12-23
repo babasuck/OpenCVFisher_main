@@ -35,17 +35,19 @@ public class BotUtil {
         return new String(text);
     }
 
-    public static void moveMouse(int x, int y) throws AWTException {
+    public synchronized static void moveMouse(int x, int y) throws AWTException, InterruptedException {
         new Robot().mouseMove(x, y);
+        //Thread.sleep(500);
     }
 
-    public static void clickMouse() throws AWTException {
+    public synchronized static void clickMouse() throws AWTException, InterruptedException {
         Robot rob = new Robot();
         rob.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         rob.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+        //Thread.sleep(500);
     }
 
-    public static void clickMouseRight() throws AWTException {
+    public synchronized static void clickMouseRight() throws AWTException {
         Robot rob = new Robot();
         rob.mousePress(InputEvent.BUTTON3_DOWN_MASK);
         rob.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);

@@ -16,6 +16,7 @@ public class BotStageController {
     @FXML
     public Label failsNumField;
     public Label timeLabel;
+    public Label timeoutLabel;
 
     public void initialize() {
     }
@@ -36,6 +37,10 @@ public class BotStageController {
 
     public void setFailsNumField(int failsNumField) {
         this.failsNumField.setText(String.valueOf(failsNumField));
+    }
+
+    public void setTimeoutLabel(int timeout) {
+        this.timeoutLabel.setText(String.valueOf(timeout));
     }
 
     public void setTimeLabel(int time) {

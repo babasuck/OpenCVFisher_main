@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class BotStage {
     private BotStageController botStageController;
-    public BotStage(Double sens, Point fishActionCoord, Rectangle AOI) {
+    public BotStage(Double sens, Point fishActionCoord, Rectangle AOI, Point destroyFishPosition) {
         Parent root;
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("BotStage.fxml"));
@@ -33,7 +33,7 @@ public class BotStage {
         stage.setResizable(false);
         stage.show();
         botStageController = loader.getController();
-        Thread bot = new Bot(sens, fishActionCoord, AOI, this);
+        Thread bot = new Bot(sens, fishActionCoord, AOI, destroyFishPosition, this);
         botStageController.titleField.setText(bot.getName());
         stage.setOnCloseRequest(windowEvent -> bot.interrupt());
     }
