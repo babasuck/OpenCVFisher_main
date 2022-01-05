@@ -70,7 +70,7 @@ public class Bot extends Thread {
      * @throws InterruptedException прерван слип
      */
     private void startFishing() throws AWTException, InterruptedException {
-        sleep(20000);
+        sleep(2000);
         int fails = 0;
         int fish = 0;
         int timeout = 0;
